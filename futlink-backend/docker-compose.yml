@@ -10,3 +10,13 @@ auth-service:
     environment:
         JWT_SECRET: your_secret_key
     restart: always
+user-service:
+    build: ./user-service
+    ports:
+    - "3002:3002"
+    volumes:
+        - ./user-service:/app
+        - /app/node_modules
+    environment:
+        JWT_SECRET: your_secret_key
+    restart: always
