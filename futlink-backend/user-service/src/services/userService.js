@@ -1,53 +1,37 @@
-const sharp = require("sharp");
 const { Storage } = require("@google-cloud/storage");
-const path = require("path");
-const fs = require("fs");
 const UserModel = require("../models/userModel");
-const storage = new Storage();
+const {storageBucket} = require("../../firebase-config");
+const sharp = require("sharp");
+
 
 class UserService {
   constructor(db) {
     this.db = db || require("../../firebase-config").db;
     this.usersCollection = this.db.collection("users");
-    this.bucket = storage.bucket("futlink-fc7bc.firebasestorage.app");
+    this.bucket = storageBucket; // Usa o bucket inicializado no Firebase
   }
 
   async processAndUploadImage(file) {
-    const tempDir = path.resolve(__dirname, "../../temp");
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
+    const fileName = `profileImage/${Date.now()}-${file.originalname}`;
+    const blob = this.bucket.file(fileName);
 
-    const tempPath = path.resolve(tempDir, file.originalname);
-    const compressedPath = tempPath.replace(/\.(\w+)$/, ".jpg");
+    return new Promise((resolve, reject) => {
+      const blobStream = blob.createWriteStream({
+        metadata: { contentType: file.mimetype },
+      });
 
-    await sharp(file.buffer)
-      .resize(800, 800, { fit: "inside" })
-      .jpeg({ quality: 80 })
-      .toFile(compressedPath);
+      blobStream.on("error", (error) => {
+        console.error("Erro ao fazer upload do arquivo:", error.message);
+        reject(new Error("Erro ao fazer upload do arquivo."));
+      });
 
-    const destination = `users/${Date.now()}_${file.originalname}`;
+      blobStream.on("finish", () => {
+        const fileUrl = `https://storage.googleapis.com/${this.bucket.name}/${fileName}`;
+        resolve(fileUrl);
+      });
 
-    await this.bucket.upload(compressedPath, {
-      destination,
-      metadata: {
-        contentType: "image/jpeg",
-      },
+      blobStream.end(file.buffer);
     });
-
-    fs.unlinkSync(compressedPath);
-
-    return destination;
-  }
-
-  validateEmail(email) {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email);
-  }
-
-  validateCPF(cpf) {
-    const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-    return cpfRegex.test(cpf);
   }
 
   async verificarCpfCadastrado(cpf) {
@@ -61,7 +45,6 @@ class UserService {
   }
 
   async createUser(data, file) {
-    console.log(data)
     if (!data.username || !data.email || !data.cpf) {
       throw new Error("Username, email, and CPF are required");
     }
@@ -81,14 +64,14 @@ class UserService {
     const newUser = new UserModel(data);
 
     if (file) {
-      const imageId = await this.processAndUploadImage(file);
-      newUser.imageId = imageId;
-      newUser.profileImageUri = `https://storage.googleapis.com/${this.bucket.name}/${imageId}`;
+      const fileUrl = await this.processAndUploadImage(file);
+      newUser.profileImageUri = fileUrl;
     }
 
     const userRef = this.usersCollection.doc();
     newUser.id = userRef.id;
     await userRef.set(newUser.toJSON());
+
     return newUser;
   }
 
@@ -175,6 +158,16 @@ class UserService {
     const addressRef = this.usersCollection.doc(userId).collection('address').doc(addressId);
     await addressRef.delete();
     return { message: "Address deleted successfully" };
+  }
+
+  validateEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  }
+
+  validateCPF(cpf) {
+    const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+    return cpfRegex.test(cpf);
   }
 }
 
