@@ -1,7 +1,20 @@
-FROM node:18-alpine
-WORKDIR /app
+# Usando a imagem oficial do Node.js
+FROM node:16
+
+# Diretório de trabalho dentro do container
+WORKDIR /usr/src/app
+
+# Copiar os arquivos de configuração do projeto para dentro do container
 COPY package*.json ./
+
+# Instalar dependências
 RUN npm install
+
+# Copiar o código-fonte do projeto para o container
 COPY . .
-EXPOSE 3001
-CMD ["npm", "run", "dev"]
+
+# Expôr a porta em que a aplicação irá rodar
+EXPOSE 3000
+
+# Comando para rodar a aplicação
+CMD ["npm", "start"]

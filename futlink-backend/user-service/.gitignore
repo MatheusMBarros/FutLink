@@ -1,3 +1,30 @@
-node_modules
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Dependências do Firebase
+firebase-service-account.json
+
+# Arquivos de build
+dist/
+build/
+
+# Arquivos de configuração do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de ambiente
 .env
-futlink-tcc-firebase-firebase-adminsdk-en7cp-ae0a81a56b.json
+
+# Arquivos de configuração do Jest (testes temporários)
+coverage/
+
+
+.env
+
+
+futlink-credencial.json 
