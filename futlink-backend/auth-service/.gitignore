@@ -1,0 +1,5 @@
+node_modules
+
+/src/infrastructure/futlink-credential.json
+
+.env

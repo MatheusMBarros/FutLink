@@ -1,15 +1,15 @@
 // src/app.js
 
 const express = require("express");
-const userRoute = require("./interface/userRoute");
+const authRoute = require("./interface/authRoute");
 const app = express();
 require("dotenv").config(); // Carrega as variáveis do arquivo .env
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(userRoute);
+app.use(authRoute);
 
 app.listen(PORT, () => {
-	console.log(`User Service running on port ${PORT}`);
+	console.log(`Auth Service running on port ${PORT}`);
 });
