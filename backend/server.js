@@ -10,7 +10,7 @@ const postRoutes = require("./routes/postRoutes");
 const likeRoutes = require("./routes/likeRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const deviceTokenRoutes = require("./routes/deviceToken");
-
+const notificationRoutes = require("./routes/notificationRoutes");
 const app = express();
 const PORT = process.env.PORT || 5050;
 
@@ -23,6 +23,7 @@ app.use("/api/matches", matchRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api", likeRoutes);
 app.use("/api", commentRoutes);
+app.use("/api", notificationRoutes);
 
 app.use("/api/device-token", deviceTokenRoutes);
 

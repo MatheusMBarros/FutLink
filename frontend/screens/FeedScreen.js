@@ -90,8 +90,6 @@ export default function FeedScreen() {
     const isExpanded = expandedPostId === item._id;
     const maxLines = isExpanded ? undefined : 3;
 
-    console.log("📹 mediaUrl:", item.mediaUrl);
-
     return (
       <View style={styles.post}>
         {/* Cabeçalho */}
@@ -111,7 +109,6 @@ export default function FeedScreen() {
               isLooping
               shouldPlay={false}
               isMuted={false}
-   
             />
           ) : (
             <Image source={{ uri: item.mediaUrl }} style={styles.media} />
