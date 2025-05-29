@@ -6,24 +6,39 @@
     "orientation": "portrait",
     "icon": "./assets/Logo.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/Logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#121218"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
+        "NSPhotoLibraryUsageDescription": "Permita acesso à galeria para selecionar imagens e vídeos.",
+        "NSCameraUsageDescription": "Este app precisa acessar a câmera para capturar imagens e vídeos."
+      },
+      "bundleIdentifier": "com.mbarros02.Futlink"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/Logo.png",
         "backgroundColor": "#121218"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.mbarros02.Futlink"
     },
     "web": {
       "favicon": "./assets/Logo.png"
+    },
+    "plugins": [],
+    "assetBundlePatterns": ["**/*"],
+
+    "extra": {
+      "eas": {
+        "projectId": "7d7572a8-5ada-4c03-9c55-14eb6fdba9b3"
+      }
     }
   }
 }

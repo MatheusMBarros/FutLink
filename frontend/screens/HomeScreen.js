@@ -66,8 +66,9 @@ export default function HomeScreen({ navigation }) {
   const fetchInvites = async () => {
     try {
       // Exemplo de fetch (substituir com sua API real)
-      const res = await fetch(`${BASE_URL}/api/invites/${user._id || user.id}`);
-      const data = await res.json();
+      // const res = await fetch(`${BASE_URL}/api/invites/${user._id || user.id}`);
+      // const data = await res.json();
+      let data = {};
       setInvites(data);
     } catch (error) {
       console.error("Erro ao buscar convites:", error);

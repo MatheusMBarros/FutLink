@@ -6,11 +6,11 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { globalStyles } from "../styles/globalStyles";
 import BackButton from "../components/BackButton";
 import { BASE_URL } from "../constants";
-import Slider from "@react-native-community/slider";
 import { useNavigation } from "@react-navigation/native";
 
 export default function PostMatchScreen({ route }) {
@@ -97,80 +97,86 @@ export default function PostMatchScreen({ route }) {
         Finalizar Partida
       </Text>
       <Text style={[globalStyles.label, { marginBottom: 20 }]}>
-        Toque no nome do jogador para selecionar o MVP. Use os sliders para
-        registrar estatísticas:
+        Selecione o MVP e registre as estatísticas dos jogadores:
       </Text>
 
       {playerStats.map((p) => (
-        <View
-          key={p.userId}
-          style={[globalStyles.card, { marginBottom: 25, padding: 16 }]}
-        >
+        <View key={p.userId} style={[globalStyles.card, styles.playerCard]}>
           <TouchableOpacity
             onPress={() => setMvpId(p.userId)}
-            style={{
-              backgroundColor: mvpId === p.userId ? "#00e67622" : "#222",
-              padding: 10,
-              borderRadius: 8,
-            }}
+            style={[
+              styles.playerHeader,
+              mvpId === p.userId && styles.mvpHighlight,
+            ]}
           >
             <Text
-              style={{
-                fontSize: 18,
-                fontWeight: mvpId === p.userId ? "bold" : "normal",
-                color: mvpId === p.userId ? "#00e676" : "#fff",
-              }}
+              style={[
+                styles.playerName,
+                mvpId === p.userId && { color: "#00C853", fontWeight: "bold" },
+              ]}
             >
-              {p.nome} {mvpId === p.userId ? "🌟 (MVP)" : ""}
+              {p.nome} {mvpId === p.userId ? "(MVP)" : ""}
             </Text>
           </TouchableOpacity>
 
-          <View style={{ marginTop: 12 }}>
-            <Text style={globalStyles.label}>Gols: {p.gols}</Text>
-            <Slider
-              key={`gols-${p.userId}-${p.gols}`}
-              minimumValue={0}
-              maximumValue={10}
-              step={1}
-              value={p.gols}
-              onValueChange={(val) => atualizarStat(p.userId, "gols", val)}
-              minimumTrackTintColor="#00C853"
-              maximumTrackTintColor="#888"
-              thumbTintColor="#00C853"
-            />
+          <View style={styles.statBlock}>
+            <Text style={styles.statLabel}>Gols</Text>
+            <View style={styles.counterRow}>
+              <TouchableOpacity
+                style={styles.counterBtn}
+                onPress={() =>
+                  atualizarStat(p.userId, "gols", Math.max(0, p.gols - 1))
+                }
+              >
+                <Text style={styles.counterText}>–</Text>
+              </TouchableOpacity>
+              <Text style={styles.counterValue}>{p.gols}</Text>
+              <TouchableOpacity
+                style={styles.counterBtn}
+                onPress={() => atualizarStat(p.userId, "gols", p.gols + 1)}
+              >
+                <Text style={styles.counterText}>+</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={{ marginTop: 12 }}>
-            <Text style={globalStyles.label}>
-              Assistências: {p.assistencias}
-            </Text>
-            <Slider
-              key={`assists-${p.userId}-${p.assistencias}`}
-              minimumValue={0}
-              maximumValue={10}
-              step={1}
-              value={p.assistencias}
-              onValueChange={(val) =>
-                atualizarStat(p.userId, "assistencias", val)
-              }
-              minimumTrackTintColor="#00C853"
-              maximumTrackTintColor="#888"
-              thumbTintColor="#00C853"
-            />
+          <View style={styles.statBlock}>
+            <Text style={styles.statLabel}>Assistências</Text>
+            <View style={styles.counterRow}>
+              <TouchableOpacity
+                style={styles.counterBtn}
+                onPress={() =>
+                  atualizarStat(
+                    p.userId,
+                    "assistencias",
+                    Math.max(0, p.assistencias - 1)
+                  )
+                }
+              >
+                <Text style={styles.counterText}>–</Text>
+              </TouchableOpacity>
+              <Text style={styles.counterValue}>{p.assistencias}</Text>
+              <TouchableOpacity
+                style={styles.counterBtn}
+                onPress={() =>
+                  atualizarStat(p.userId, "assistencias", p.assistencias + 1)
+                }
+              >
+                <Text style={styles.counterText}>+</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={{ marginTop: 12 }}>
-            <Text style={globalStyles.label}>
-              Minutos Jogados: {p.minutosJogador}
-            </Text>
-          </View>
+          <Text style={styles.minutos}>
+            Minutos jogados: {p.minutosJogador}
+          </Text>
 
           <TouchableOpacity
-            style={{ marginTop: 8 }}
+            style={styles.toggleBtn}
             onPress={() => atualizarStat(p.userId, "vitorias", !p.vitorias)}
           >
-            <Text style={[globalStyles.link]}>
-              Vitória? {p.vitorias ? "✅ Sim" : "❌ Não"} (toque para alternar)
+            <Text style={styles.toggleBtnText}>
+              Vitória: {p.vitorias ? "Sim" : "Não"} (toque para alternar)
             </Text>
           </TouchableOpacity>
         </View>
@@ -188,9 +194,77 @@ export default function PostMatchScreen({ route }) {
         {loading ? (
           <ActivityIndicator color="#121218" />
         ) : (
-          <Text style={globalStyles.buttonText}>✅ Finalizar Partida</Text>
+          <Text style={globalStyles.buttonText}>Finalizar Partida</Text>
         )}
       </TouchableOpacity>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  playerCard: {
+    marginBottom: 25,
+    padding: 16,
+  },
+  playerHeader: {
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderColor: "#333",
+    marginBottom: 10,
+  },
+  mvpHighlight: {
+    borderBottomColor: "#00C853",
+  },
+  playerName: {
+    fontSize: 18,
+    color: "#fff",
+    textAlign: "center",
+  },
+  statBlock: {
+    marginTop: 10,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: "#ccc",
+    marginBottom: 4,
+  },
+  counterRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  counterBtn: {
+    backgroundColor: "#00C853",
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+  },
+  counterText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#121218",
+  },
+  counterValue: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    width: 24,
+    textAlign: "center",
+  },
+  minutos: {
+    textAlign: "center",
+    marginTop: 14,
+    fontSize: 14,
+    color: "#aaa",
+  },
+  toggleBtn: {
+    marginTop: 8,
+    padding: 8,
+  },
+  toggleBtnText: {
+    color: "#00C853",
+    textAlign: "center",
+    fontSize: 14,
+  },
+});

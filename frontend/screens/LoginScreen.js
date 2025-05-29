@@ -12,7 +12,7 @@ import { globalStyles } from "../styles/globalStyles";
 import { BASE_URL } from "../constants";
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
-
+import { registerForPushNotificationsAsync } from "../utils/registerPushToken";
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -31,6 +31,17 @@ export default function LoginScreen({ navigation }) {
       if (response.ok) {
         await AsyncStorage.setItem("token", data.token);
         await AsyncStorage.setItem("user", JSON.stringify(data.user));
+        const pushToken = await registerForPushNotificationsAsync();
+        if (pushToken) {
+          await fetch(`${BASE_URL}/api/device-token`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: data.user.id,
+              token: pushToken,
+            }),
+          });
+        }
 
         setUser({
           id: data.user.id,

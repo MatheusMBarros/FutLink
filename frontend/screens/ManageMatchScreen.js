@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Alert, ScrollView, TextInput } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -29,6 +29,7 @@ const ManageMatchScreen = ({ route }) => {
   const [duracao, setDuracao] = useState(String(match.duracao || ""));
   const [latitude, setLatitude] = useState(match.location?.coordinates[1]);
   const [longitude, setLongitude] = useState(match.location?.coordinates[0]);
+  const [statsPorJogador, setStatsPorJogador] = useState({});
 
   const [open, setOpen] = useState(false);
   const [tipos] = useState([
@@ -107,7 +108,26 @@ const ManageMatchScreen = ({ route }) => {
       Alert.alert("Erro ao conectar com o servidor.");
     }
   };
-
+  const fetchEstatisticasDosJogadores = async () => {
+    try {
+      const statsMap = {};
+      for (const jogador of inscritos) {
+        const res = await fetch(`${BASE_URL}/api/stats/${jogador._id}`);
+        if (res.ok) {
+          const data = await res.json();
+          statsMap[jogador._id] = data;
+        }
+      }
+      setStatsPorJogador(statsMap);
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas dos jogadores:", err);
+    }
+  };
+  useEffect(() => {
+    if (isFinalizada && inscritos.length > 0) {
+      fetchEstatisticasDosJogadores();
+    }
+  }, [isFinalizada, inscritos]);
   const salvarAlteracoes = async () => {
     const [dia, mes, ano] = data.split("/");
     const dateObj = new Date(`${ano}-${mes}-${dia}T12:00:00Z`);
@@ -280,15 +300,17 @@ const ManageMatchScreen = ({ route }) => {
         inscritos.map((p) => (
           <View key={p._id} style={globalStyles.card}>
             <Text style={globalStyles.itemText}>👤 {p.nome}</Text>
-            <Text style={globalStyles.itemText}>Gols: {p.gols || 0}</Text>
             <Text style={globalStyles.itemText}>
-              Assistências: {p.assistencias || 0}
+              Gols: {statsPorJogador[p._id]?.gols ?? 0}
             </Text>
             <Text style={globalStyles.itemText}>
-              Vitória: {p.vitorias ? "✅" : "❌"}
+              Assistências: {statsPorJogador[p._id]?.assistencias ?? 0}
             </Text>
             <Text style={globalStyles.itemText}>
-              Minutos jogados: {p.minutosJogador || 0}
+              Vitória: {statsPorJogador[p._id]?.vitorias ? "✅" : "❌"}
+            </Text>
+            <Text style={globalStyles.itemText}>
+              Minutos jogados: {statsPorJogador[p._id]?.minutos ?? 0}
             </Text>
           </View>
         ))

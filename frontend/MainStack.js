@@ -7,9 +7,12 @@ import CreateMatchScreen from "./screens/CreateMatchScreen";
 import PostMatchScreen from "./screens/PostMatchScreen";
 import MatchDetailsScreen from "./screens/MatchDetailsScreen";
 import ManageMatch from "./screens/ManageMatchScreen";
+import CreatePostScreen from "./screens/CreatePostScreen";
 
 import BottomTabs from "./components/BottomTabNavigator";
 import ProfileScreen from "./screens/ProfileScreen";
+import NotificationsScreen from "./screens/NotificationsScreen";
+
 import UserProfileScreen from "./screens/UserProfileScreen";
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +39,12 @@ export default function MainStack() {
         options={{ presentation: "card", headerShown: false }}
       />
       <Stack.Screen name="ManageMatch" component={ManageMatch} />
+      <Stack.Screen
+        name="CreatePostScreen"
+        component={CreatePostScreen}
+        options={{ title: "Nova Postagem" }}
+      />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
     </Stack.Navigator>
   );
 }

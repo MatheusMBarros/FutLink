@@ -6,6 +6,10 @@ require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const matchRoutes = require("./routes/matchRoutes");
 const statsRoutes = require("./routes/statsRoutes");
+const postRoutes = require("./routes/postRoutes");
+const likeRoutes = require("./routes/likeRoutes");
+const commentRoutes = require("./routes/commentRoutes");
+const deviceTokenRoutes = require("./routes/deviceToken");
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -13,9 +17,14 @@ const PORT = process.env.PORT || 5050;
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api", likeRoutes);
+app.use("/api", commentRoutes);
+
+app.use("/api/device-token", deviceTokenRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
