@@ -1,13 +1,11 @@
-// services/notifi.js
-
-const Notification = require("../models/Notifications"); // ajuste o caminho conforme seu projeto
+const Notification = require("../models/Notifications");
 
 const getUserNotifications = async (userId) => {
   try {
     const notifications = await Notification.find({ user: userId })
-      .sort({ createdAt: -1 }) // ordena da mais recente para a mais antiga
-      .populate("from", "username") // opcional: popula dados do remetente
-      .populate("post"); // opcional: popula dados do post (se aplicável)
+      .sort({ createdAt: -1 })
+      .populate("from", "username avatar") // populando campos úteis
+      .populate("post");
 
     return notifications;
   } catch (error) {

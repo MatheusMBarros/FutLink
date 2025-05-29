@@ -4,7 +4,8 @@ const router = express.Router();
 const notificationController = require("../controllers/notificationController");
 
 // Criar partida
-router.get("/", notificationController.getNotifications);
+router.get("/:userId", notificationController.getNotifications);
+
 
 
 

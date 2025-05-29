@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -8,17 +8,21 @@ import {
   RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import BackButton from "../components/BackButton";
+import { BASE_URL } from "../constants";
+import { UserContext } from "../context/UserContext";
 
 export default function NotificationsScreen() {
+  const { user } = useContext(UserContext);
   const [notifications, setNotifications] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadNotifications = async () => {
     try {
-      const stored = await AsyncStorage.getItem("notifications");
-      const parsed = stored ? JSON.parse(stored) : [];
-      setNotifications(parsed.reverse()); // Mostrar da mais recente para mais antiga
+      if (!user?._id) return;
+      const response = await axios.get(`${BASE_URL}/notification/${user._id}`);
+      setNotifications(response.data.reverse()); // Da mais recente para mais antiga
     } catch (err) {
       console.error("Erro ao carregar notificações:", err.message);
     }
@@ -36,8 +40,11 @@ export default function NotificationsScreen() {
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.body}>{item.body}</Text>
+      <Text style={styles.title}>
+        {item.type === "like"
+          ? `${item.from?.username} curtiu seu post`
+          : `${item.from?.username} comentou: ${item.comment || ""}`}
+      </Text>
     </View>
   );
 
@@ -49,7 +56,7 @@ export default function NotificationsScreen() {
       ) : (
         <FlatList
           data={notifications}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(item) => item._id}
           renderItem={renderItem}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -76,10 +83,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  body: {
-    color: "#ccc",
-    marginTop: 4,
   },
   emptyText: {
     color: "#999",
