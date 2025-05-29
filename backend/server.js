@@ -21,9 +21,9 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/stats", statsRoutes);
-app.use("/api", likeRoutes);
-app.use("/api", commentRoutes);
-app.use("/api", notificationRoutes);
+app.use("/api/like", likeRoutes);
+app.use("/api/comment", commentRoutes);
+app.use("/api/notification", notificationRoutes);
 
 app.use("/api/device-token", deviceTokenRoutes);
 
