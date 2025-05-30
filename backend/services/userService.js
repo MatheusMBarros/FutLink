@@ -14,3 +14,4 @@ async function updateUser(id, updates) {
 }
 
 module.exports = { getUserById, updateUser };
+

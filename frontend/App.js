@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
@@ -6,10 +6,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import axios from "axios";
 
 import { BASE_URL } from "./constants";
-import registerForPushNotificationsAsync from "./utils/registerPushToken";
+import { registerForPushNotificationsAsync } from "./utils/registerPushToken";
 import { navigationRef } from "./navigation/RootNavigation";
 import MainStack from "./MainStack";
-import { UserProvider, UserContext } from "./context/UserContext";
 
 // Configuração global de notificações
 Notifications.setNotificationHandler({
@@ -21,35 +20,30 @@ Notifications.setNotificationHandler({
 });
 
 function AppContent() {
-  const { user, setUser } = useContext(UserContext);
+  const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
-      const token = await AsyncStorage.getItem("token");
-      const userJson = await AsyncStorage.getItem("user");
+      try {
+        const userJson = await AsyncStorage.getItem("user");
 
-      if (userJson) {
-        const parsedUser = JSON.parse(userJson);
-        setUser(parsedUser);
+        if (userJson) {
+          const parsedUser = JSON.parse(userJson);
 
-        const pushToken = await registerForPushNotificationsAsync();
-        if (pushToken && parsedUser._id) {
-          await axios.post(`${BASE_URL}/api/device-token`, {
-            userId: parsedUser._id,
-            token: pushToken,
-          });
+          const pushToken = await registerForPushNotificationsAsync();
+          if (pushToken && parsedUser._id) {
+            await axios.post(`${BASE_URL}/api/device-token`, {
+              userId: parsedUser._id,
+              token: pushToken,
+            });
+          }
         }
+
+        setIsAppReady(true);
+      } catch (err) {
+        console.error("Erro ao iniciar o app:", err);
+        setIsAppReady(true);
       }
-
-      // Redirecionar para Login ou MainTabs
-      setTimeout(() => {
-        if (navigationRef.isReady()) {
-          navigationRef.current?.reset({
-            index: 0,
-            routes: [{ name: token ? "MainTabs" : "Login" }],
-          });
-        }
-      }, 100);
     };
 
     initApp();
@@ -62,17 +56,21 @@ function AppContent() {
           data: notification.request.content.data,
         };
 
-        console.log("🔔 Notificação recebida:", newNotification);
-
-        const existing = await AsyncStorage.getItem("notifications");
-        const list = existing ? JSON.parse(existing) : [];
-        list.push(newNotification);
-        await AsyncStorage.setItem("notifications", JSON.stringify(list));
+        try {
+          const existing = await AsyncStorage.getItem("notifications");
+          const list = existing ? JSON.parse(existing) : [];
+          list.push(newNotification);
+          await AsyncStorage.setItem("notifications", JSON.stringify(list));
+        } catch (e) {
+          console.error("Erro ao salvar notificação local:", e);
+        }
       }
     );
 
     return () => sub.remove();
   }, []);
+
+  if (!isAppReady) return null;
 
   return <MainStack />;
 }
@@ -80,11 +78,9 @@ function AppContent() {
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <UserProvider>
-        <NavigationContainer ref={navigationRef}>
-          <AppContent />
-        </NavigationContainer>
-      </UserProvider>
+      <NavigationContainer ref={navigationRef}>
+        <AppContent />
+      </NavigationContainer>
     </GestureHandlerRootView>
   );
 }

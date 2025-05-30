@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   RefreshControl,
 } from "react-native";
-import { UserContext } from "../context/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { globalStyles } from "../styles/globalStyles";
 import HeaderSection from "../components/HeaderSection";
 import StatCard from "../components/StatCard";
@@ -14,7 +14,7 @@ import InviteCard from "../components/InviteCard";
 import { BASE_URL } from "../constants";
 
 export default function HomeScreen({ navigation }) {
-  const { user } = useContext(UserContext);
+  const [user, setUser] = useState(null);
   const [stats, setStats] = useState({
     matchesPlayed: 0,
     mvpCount: 0,
@@ -29,6 +29,22 @@ export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("user");
+        if (userData) {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar usuário do AsyncStorage:", error);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  useEffect(() => {
     if (user?._id || user?.id) {
       fetchAllData();
     }
@@ -41,7 +57,7 @@ export default function HomeScreen({ navigation }) {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchAllData().finally(() => setRefreshing(false));
-  }, []);
+  }, [user]);
 
   const fetchStats = async () => {
     try {
@@ -65,10 +81,9 @@ export default function HomeScreen({ navigation }) {
 
   const fetchInvites = async () => {
     try {
-      // Exemplo de fetch (substituir com sua API real)
       // const res = await fetch(`${BASE_URL}/api/invites/${user._id || user.id}`);
       // const data = await res.json();
-      let data = {};
+      const data = []; // Substituir por dados reais
       setInvites(data);
     } catch (error) {
       console.error("Erro ao buscar convites:", error);

@@ -63,7 +63,6 @@ export default function ProfileScreen() {
         setPosicao(updated.posicao || "");
         setRange(updated.range);
         Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
-        await AsyncStorage.setItem("user", JSON.stringify(updated));
       } else {
         Alert.alert("Erro", "Falha ao atualizar o perfil.");
       }
@@ -95,7 +94,6 @@ export default function ProfileScreen() {
       contentContainerStyle={[globalStyles.container, { alignItems: "center" }]}
     >
       <BackButton />
-
       <Text style={globalStyles.title}>Editar Perfil</Text>
 
       <Text style={[globalStyles.label, { alignSelf: "flex-start" }]}>

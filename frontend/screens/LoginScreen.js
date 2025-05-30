@@ -16,7 +16,6 @@ import { registerForPushNotificationsAsync } from "../utils/registerPushToken";
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const { setUser } = useContext(UserContext);
 
   const handleLogin = async () => {
     try {
@@ -42,14 +41,6 @@ export default function LoginScreen({ navigation }) {
             }),
           });
         }
-
-        setUser({
-          id: data.user.id,
-          nome: data.user.nome,
-          email: data.user.email,
-          posicao: data.user.posicao,
-          cidade: data.user.cidade,
-        });
 
         navigation.replace("MainTabs");
       } else {

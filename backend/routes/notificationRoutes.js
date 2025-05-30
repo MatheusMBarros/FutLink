@@ -6,7 +6,4 @@ const notificationController = require("../controllers/notificationController");
 // Criar partida
 router.get("/:userId", notificationController.getNotifications);
 
-
-
-
 module.exports = router;

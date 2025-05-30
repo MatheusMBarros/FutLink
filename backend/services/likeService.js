@@ -9,24 +9,23 @@ async function toggleLike(postId, userId) {
     post: postId,
   });
 
-
   if (existingLike) {
     return { liked: false };
   }
 
   await Like.create({ user: userId, post: postId });
 
-  const post = await Post.findById(postId).populate("author");
+  const post = await Post.findById(postId).populate("author", "_id");
+  const user = await User.findById(userId);
+
   if (post?.author?._id?.toString() !== userId) {
-    const user = await User.findById(userId);
-    if (user && post.author) {
-      await notifyUserInteraction({
-        toUserId: post.author._id,
-        fromUserName: user.nome,
-        type: "like",
-        postId,
-      });
-    }
+    await notifyUserInteraction({
+      toUserId: post.author._id,
+      fromUserId: userId,
+      fromUserName: user.nome,
+      type: "like",
+      postId,
+    });
   }
 
   return { liked: true };

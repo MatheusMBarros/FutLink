@@ -128,7 +128,12 @@ export default function FeedScreen() {
             <Text style={styles.likeCount}>{likes[item._id] || 0}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{ marginLeft: 16 }}>
+          <TouchableOpacity
+            style={{ marginLeft: 16 }}
+            onPress={() =>
+              navigation.navigate("Comments", { postId: item._id })
+            }
+          >
             <Feather name="message-circle" size={22} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -183,6 +188,7 @@ export default function FeedScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 50,
     flex: 1,
     backgroundColor: "#121218",
   },

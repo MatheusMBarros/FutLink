@@ -57,19 +57,22 @@ export default function MyMatchesScreen() {
 
   const renderItem = ({ item }) => {
     const now = new Date();
-    const inicio = new Date(item.data);
+
+    const inicio = new Date(item.data); // base correta da partida
+    const [hour, minute] = (item.horario || "00:00").split(":").map(Number);
+    inicio.setHours(hour, minute, 0, 0);
+
     const fim = new Date(inicio.getTime() + (item.duracao || 0) * 60000);
+
     const isFinalizada = item.finalizada;
     const precisaAvaliacao = !item.finalizada && fim <= now;
     const aindaNaoOcorreu = fim > now;
 
     const dataFormatada = inicio.toLocaleDateString("pt-BR");
-    const horarioFormatado =
-      item.horario ||
-      inicio.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+    const horarioFormatado = inicio.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
     const handlePress = () => {
       if (precisaAvaliacao) {

@@ -2,7 +2,25 @@ const DeviceToken = require("../models/DeviceToken");
 const Notification = require("../models/Notifications");
 const fetch = require("node-fetch");
 
-async function notifyUserInteraction({ toUserId, fromUserName, type, postId }) {
+async function notifyUserInteraction({
+  toUserId,
+  fromUserId,
+  fromUserName,
+  type,
+  postId,
+}) {
+  if (!toUserId || !fromUserId || !postId || !type) return;
+
+  // Garante que não duplique notificações
+  const alreadyExists = await Notification.findOne({
+    user: toUserId,
+    from: fromUserId,
+    post: postId,
+    type,
+  });
+
+  if (alreadyExists) return;
+
   const device = await DeviceToken.findOne({ userId: toUserId });
   if (!device?.token) return;
 
@@ -11,7 +29,6 @@ async function notifyUserInteraction({ toUserId, fromUserName, type, postId }) {
       ? `${fromUserName} curtiu seu post.`
       : `${fromUserName} comentou no seu post.`;
 
-  // Payload para notificação via Expo
   const payload = {
     to: device.token,
     sound: "default",
@@ -21,7 +38,6 @@ async function notifyUserInteraction({ toUserId, fromUserName, type, postId }) {
   };
 
   try {
-    // Envia notificação via Expo
     const response = await fetch("https://exp.host/--/api/v2/push/send", {
       method: "POST",
       headers: {
@@ -34,16 +50,15 @@ async function notifyUserInteraction({ toUserId, fromUserName, type, postId }) {
 
     const json = await response.json();
 
-    // Salva no banco para exibir no app
     await Notification.create({
-      userId: toUserId,
-      from: fromUserName,
+      user: toUserId,
+      from: fromUserId,
       post: postId,
       type,
       message,
     });
   } catch (err) {
-    console.error("❌ Erro ao enviar ou salvar notificação:", err.message);
+    console.error("❌ Erro ao enviar/salvar notificação:", err.message);
   }
 }
 
