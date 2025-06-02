@@ -5,7 +5,7 @@ const matchSchema = new mongoose.Schema({
   descricao: String,
   data: Date,
   horario: String, // Horário de início (ex: "19:00")
-  duracao: Number, // <-- Novo campo: duração da partida em minutos
+  duracao: Number, // Duração da partida em minutos
   local: String,
   cidade: String,
   criador: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -25,6 +25,17 @@ const matchSchema = new mongoose.Schema({
   },
   mvp: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   finalizada: { type: Boolean, default: false },
+
+  tipoPartida: {
+    type: String,
+    enum: ["Jogo", "Treino", "Torneio"],
+    required: true,
+  },
+  timeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Team",
+    required: false,
+  },
 });
 
 // Cria o índice geoespacial

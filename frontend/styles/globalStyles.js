@@ -108,6 +108,7 @@ export const globalStyles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+    padding: 40,
     backgroundColor: "#121218",
   },
   header: {

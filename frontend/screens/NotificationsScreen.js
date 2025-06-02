@@ -19,38 +19,17 @@ export default function NotificationsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadUser = async () => {
-    try {
-      const userJson = await AsyncStorage.getItem("user");
-      const parsed = JSON.parse(userJson);
-      if (parsed?._id || parsed?.id) {
-        setUserId(parsed._id || parsed.id);
-      }
-    } catch (err) {
-      console.warn("⚠️ Erro ao carregar usuário:", err.message);
-    }
-  };
-
-  const loadNotifications = async () => {
-    try {
-      if (!userId) {
-        console.warn("❌ ID do usuário não disponível");
-        return;
-      }
-
-      const response = await axios.get(
-        `${BASE_URL}/api/notification/${userId}`
-      );
-
-      setNotifications(response.data.reverse());
-    } catch (err) {
-      console.error("❌ Erro ao carregar notificações:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userJson = await AsyncStorage.getItem("user");
+        const parsed = JSON.parse(userJson);
+        const id = parsed?._id || parsed?.id;
+        setUserId(id);
+      } catch (err) {
+        console.warn("⚠️ Erro ao carregar usuário:", err.message);
+      }
+    };
     loadUser();
   }, []);
 
@@ -59,6 +38,19 @@ export default function NotificationsScreen() {
       loadNotifications();
     }
   }, [userId]);
+
+  const loadNotifications = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/api/notification/${userId}`
+      );
+      setNotifications(response.data.reverse());
+    } catch (err) {
+      console.error("❌ Erro ao carregar notificações:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -69,15 +61,20 @@ export default function NotificationsScreen() {
   const renderItem = ({ item }) => {
     const remetente = item.from?.nome || "Alguém";
 
+    let mensagem = item.message;
+    if (item.type === "like") {
+      mensagem = `${remetente} curtiu seu post`;
+    } else if (item.type === "comment") {
+      mensagem = item.message || `${remetente} comentou em seu post`;
+    } else if (item.type === "nova-partida") {
+      mensagem = item.message;
+    } else if (item.type === "lembrete") {
+      mensagem = item.message;
+    }
+
     return (
       <View style={styles.card}>
-        <Text style={styles.title}>
-          {item.type === "like"
-            ? `${remetente} curtiu seu post`
-            : item.type === "comment"
-            ? ` ${item.message || ""}`
-            : item.message}
-        </Text>
+        <Text style={styles.title}>{mensagem}</Text>
       </View>
     );
   };

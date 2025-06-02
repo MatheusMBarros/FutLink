@@ -23,6 +23,6 @@ router.post("/:id/mvp", matchController.setMVP);
 router.delete("/:id", matchController.deleteMatch);
 router.get("/creator/:userId", matchController.getByCreator);
 router.post("/:id/finalizar", matchController.finalizarPartida);
-
+router.get("/team/:teamId", matchController.getMatchesByTeam);
 
 module.exports = router;

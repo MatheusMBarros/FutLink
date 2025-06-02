@@ -40,7 +40,7 @@ export default function FeedScreen() {
       const likedMap = {};
       response.data.forEach((post) => {
         likeMap[post._id] = post.likes || 0;
-        likedMap[post._id] = false;
+        likedMap[post._id] = post.likedByCurrentUser || false;
       });
       setLikes(likeMap);
       setLikedPosts(likedMap);
@@ -101,7 +101,7 @@ export default function FeedScreen() {
         {item.mediaUrl &&
           (isVideo ? (
             <Video
-              key={item._id} // força re-render do componente
+              key={item._id}
               source={{ uri: item.mediaUrl }}
               style={styles.media}
               useNativeControls

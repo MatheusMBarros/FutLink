@@ -22,7 +22,7 @@ const getAllPostsWithLikes = async (userId) => {
       return {
         ...post,
         likes: likeCount,
-        liked,
+        likedByCurrentUser: liked,
       };
     })
   );

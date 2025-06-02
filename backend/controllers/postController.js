@@ -2,11 +2,12 @@ const postService = require("../services/postService");
 
 exports.createPost = async (req, res) => {
   try {
-    const { author, content, mediaUrl } = req.body;
+    const { author, content, mediaUrl, type } = req.body;
     const savedPost = await postService.createPost({
       author,
       content,
       mediaUrl,
+      type,
     });
     res.status(201).json(savedPost);
   } catch (err) {

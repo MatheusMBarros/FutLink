@@ -3,7 +3,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 async function registerUser({ nome, email, senha, posicao, cidade, range }) {
-  const existingUser = await User.findOne({ email });
+  const emailLower = email.toLowerCase();
+
+  const existingUser = await User.findOne({ email: emailLower });
   if (existingUser) {
     throw new Error("Email já está em uso");
   }
@@ -12,7 +14,7 @@ async function registerUser({ nome, email, senha, posicao, cidade, range }) {
 
   const user = new User({
     nome,
-    email,
+    email: emailLower,
     senha: hashedPassword,
     posicao,
     cidade,
@@ -24,7 +26,9 @@ async function registerUser({ nome, email, senha, posicao, cidade, range }) {
 }
 
 async function loginUser({ email, senha }) {
-  const user = await User.findOne({ email });
+  const emailLower = email.toLowerCase();
+
+  const user = await User.findOne({ email: emailLower });
   if (!user) {
     throw new Error("Usuário não encontrado");
   }

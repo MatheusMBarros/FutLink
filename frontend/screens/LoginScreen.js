@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   KeyboardAvoidingView,
@@ -7,12 +7,12 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { UserContext } from "../context/UserContext";
 import { globalStyles } from "../styles/globalStyles";
 import { BASE_URL } from "../constants";
 import InputField from "../components/InputField";
 import PrimaryButton from "../components/PrimaryButton";
 import { registerForPushNotificationsAsync } from "../utils/registerPushToken";
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -55,17 +55,20 @@ export default function LoginScreen({ navigation }) {
     <KeyboardAvoidingView
       style={globalStyles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
+      testID="login_screen"
     >
       <Image
         source={require("../assets/LogoBgOff.png")}
         style={globalStyles.logo}
+        testID="logo"
       />
 
-      <Text style={globalStyles.subtitle}>
+      <Text style={globalStyles.subtitle} testID="subtitle">
         Bem-vindo! Faça login para continuar
       </Text>
 
       <InputField
+        testID="input_email"
         label="Email"
         value={email}
         onChangeText={setEmail}
@@ -73,6 +76,7 @@ export default function LoginScreen({ navigation }) {
         keyboardType="email-address"
       />
       <InputField
+        testID="input_senha"
         label="Senha"
         value={senha}
         onChangeText={setSenha}
@@ -80,9 +84,10 @@ export default function LoginScreen({ navigation }) {
         secureTextEntry
       />
 
-      <PrimaryButton title="Entrar" onPress={handleLogin} />
+      <PrimaryButton testID="btn_entrar" title="Entrar" onPress={handleLogin} />
 
       <TouchableOpacity
+        testID="btn_ir_para_cadastro"
         onPress={() => navigation.navigate("Register")}
         style={{ marginTop: 24 }}
         activeOpacity={0.7}

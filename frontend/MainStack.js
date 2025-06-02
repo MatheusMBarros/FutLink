@@ -13,6 +13,9 @@ import ProfileScreen from "./screens/ProfileScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import UserProfileScreen from "./screens/UserProfileScreen";
 import CommentsScreen from "./screens/CommentsScreen";
+import JoinOrCreateTeamScreen from "./screens/JoinOrCreateTeamScreen";
+import TeamDetailsScreen from "./screens/TeamDetailsScreen";
+import InvitesScreen from "./screens/InvitesScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +42,13 @@ export default function MainStack() {
         options={{ title: "Nova Postagem" }}
       />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen
+        name="JoinOrCreateTeamScreen"
+        component={JoinOrCreateTeamScreen}
+      />
+
+      <Stack.Screen name="TeamDetailsScreen" component={TeamDetailsScreen} />
+      <Stack.Screen name="InvitesScreen" component={InvitesScreen} />
     </Stack.Navigator>
   );
 }

@@ -1,12 +1,13 @@
+// navigation/BottomTabs.js
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 
 import HomeScreen from "../screens/HomeScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import TeamStackNavigator from "../navigation/TeamStackNavigator"; // 👈 novo import
 import FeedScreen from "../screens/FeedScreen";
 import FindMatchesScreen from "../screens/FindMatchScreen";
-import MyMatchesScreen from "../screens/MyMatchesScreen"; // ✅
+import MyMatchesScreen from "../screens/MyMatchesScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -35,6 +36,8 @@ export default function BottomTabs() {
             return (
               <Ionicons name="calendar-outline" size={size} color={color} />
             );
+          } else if (route.name === "Time") {
+            return <Ionicons name="people" size={size} color={color} />;
           }
         },
       })}
@@ -43,6 +46,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Feed" component={FeedScreen} />
       <Tab.Screen name="Partidas" component={FindMatchesScreen} />
       <Tab.Screen name="Minhas Partidas" component={MyMatchesScreen} />
+      <Tab.Screen name="Time" component={TeamStackNavigator} />
     </Tab.Navigator>
   );
 }

@@ -2,9 +2,10 @@ const matchService = require("../services/matchService");
 
 exports.createMatch = async (req, res) => {
   try {
-    const match = await matchService.createMatch(req.body);
+    const match = await matchService.createMatchComNotificacoes(req.body);
     res.status(201).json(match);
   } catch (err) {
+    console.error("❌ Erro ao criar partida:", err);
     res
       .status(500)
       .json({ error: "Erro ao criar partida", details: err.message });
@@ -19,6 +20,17 @@ exports.getAllMatches = async (req, res) => {
     res
       .status(500)
       .json({ error: "Erro ao buscar partidas", details: err.message });
+  }
+};
+
+exports.getMatchesByTeam = async (req, res) => {
+  try {
+    const matches = await matchService.getMatchesByTeam(req.params.teamId);
+    res.json(matches);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Erro ao buscar partidas do time", error: err.message });
   }
 };
 
@@ -116,6 +128,7 @@ exports.deleteMatch = async (req, res) => {
     res.status(500).json({ error: "Erro ao excluir partida" });
   }
 };
+
 exports.getByCreator = async (req, res) => {
   try {
     const { userId } = req.params;

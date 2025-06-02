@@ -5,12 +5,13 @@ import {
   FlatList,
   SafeAreaView,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import HeaderSection from "../components/HeaderSection";
 import StatCard from "../components/StatCard";
-import InviteCard from "../components/InviteCard";
 import { BASE_URL } from "../constants";
 
 export default function HomeScreen({ navigation }) {
@@ -25,7 +26,6 @@ export default function HomeScreen({ navigation }) {
     empates: 0,
     minutos: 0,
   });
-  const [invites, setInvites] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -46,17 +46,13 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     if (user?._id || user?.id) {
-      fetchAllData();
+      fetchStats();
     }
   }, [user]);
 
-  const fetchAllData = async () => {
-    await Promise.all([fetchStats(), fetchInvites()]);
-  };
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchAllData().finally(() => setRefreshing(false));
+    fetchStats().finally(() => setRefreshing(false));
   }, [user]);
 
   const fetchStats = async () => {
@@ -79,23 +75,11 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const fetchInvites = async () => {
-    try {
-      // const res = await fetch(`${BASE_URL}/api/invites/${user._id || user.id}`);
-      // const data = await res.json();
-      const data = []; // Substituir por dados reais
-      setInvites(data);
-    } catch (error) {
-      console.error("Erro ao buscar convites:", error);
-    }
-  };
-
   return (
-    <SafeAreaView style={globalStyles.safeArea}>
+    <View style={globalStyles.container}>
       <FlatList
-        style={{ paddingHorizontal: 20 }}
-        data={invites}
-        keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+        data={[]} // Vazio para usar apenas como scroll/refresh container
+        keyExtractor={() => Math.random().toString()}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -107,24 +91,20 @@ export default function HomeScreen({ navigation }) {
           <>
             <HeaderSection user={user} navigation={navigation} />
             <StatCard stats={stats} />
+
             <View style={globalStyles.card}>
               <Text style={globalStyles.cardTitle}>📨 Convites Pendentes</Text>
+              <TouchableOpacity
+                style={{ marginTop: 10 }}
+                onPress={() => navigation.navigate("InvitesScreen")}
+              >
+                <Text style={globalStyles.link}>Ver convites</Text>
+              </TouchableOpacity>
             </View>
           </>
         }
-        renderItem={({ item }) => <InviteCard invite={item} />}
-        ListEmptyComponent={
-          <Text
-            style={[
-              globalStyles.itemText,
-              { textAlign: "center", marginTop: 20 },
-            ]}
-          >
-            Sem convites no momento
-          </Text>
-        }
         contentContainerStyle={{ paddingBottom: 60 }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
