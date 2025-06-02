@@ -6,11 +6,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
-    "build:e2e:android": "detox build --configuration android.emu.debug",
-    "test:e2e:android": "detox test --configuration android.emu.debug",
-    "build:e2e:ios": "detox build --configuration ios.sim.debug",
-    "test:e2e:ios": "detox test --configuration ios.sim.debug"
+    "web": "expo start --web"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
