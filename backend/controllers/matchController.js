@@ -5,7 +5,7 @@ exports.createMatch = async (req, res) => {
     const match = await matchService.createMatchComNotificacoes(req.body);
     res.status(201).json(match);
   } catch (err) {
-    console.error("❌ Erro ao criar partida:", err);
+    console.error("Erro ao criar partida:", err);
     res
       .status(500)
       .json({ error: "Erro ao criar partida", details: err.message });

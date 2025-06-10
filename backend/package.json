@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests",
     "test:watch": "jest --watch",

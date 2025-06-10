@@ -12,5 +12,5 @@ router.get("/invites/:userId", teamController.getInvites);
 router.get("/buscar", teamController.searchTeamByName);
 router.post("/invites/:inviteId/respond", teamController.respondInvite);
 
-router.get("/:id", teamController.getTeamById); // <— última rota
+router.get("/:id", teamController.getTeamById);
 module.exports = router;
